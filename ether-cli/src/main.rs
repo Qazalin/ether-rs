@@ -1,3 +1,9 @@
+use ether::etherscan::{EtherscanApi, EtherscanApiConfig};
+
 fn main() {
-    println!("Hello, world!");
+    let api = EtherscanApi::new(EtherscanApiConfig {
+        api_key: Some("0x".to_string()),
+        user: None,
+    });
+    println!("{:?}", api);
 }

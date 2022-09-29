@@ -83,6 +83,9 @@ dependencies = [
 [[package]]
 name = "ether-cli"
 version = "0.1.0"
+dependencies = [
+ "ether",
+]
 
 [[package]]
 name = "fastrand"

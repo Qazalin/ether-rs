@@ -9,18 +9,17 @@ pub struct EtherscanApi {
 
 impl EtherscanApi {
     pub fn new(cfg: EtherscanApiConfig) -> Self {
-        let mut builder = ClientBuilder::new();
+        let mut url = Url::parse("https://api.etherscan.io/api").unwrap();
         if let Some(api_key) = cfg.api_key {
-            let mut url =
-                Url::parse_with_params("https://api.etherscan.io/api", &[("apikey", api_key)])
-                    .unwrap();
-            builder = builder.user_agent("ether");
+            url.query_pairs_mut().append_pair("apiKey", &api_key);
         }
-        let client = builder.build().unwrap();
 
-        EtherscanApi {
-            client: Client::new(),
-        }
+        println!("url: {}", url);
+
+        return Self {
+            // config: Some(cfg),
+            client: ClientBuilder::new().build().unwrap(),
+        };
     }
 }
 
