@@ -1,9 +1,17 @@
+mod opts;
+
+use crate::opts::EtherCliCommands;
+use clap::Parser;
 use ether::etherscan::{EtherscanApi, EtherscanApiConfig};
 
 fn main() {
-    let api = EtherscanApi::new(EtherscanApiConfig {
+    let _api = EtherscanApi::new(EtherscanApiConfig {
         api_key: Some("0x".to_string()),
         user: None,
     });
-    println!("{:?}", api);
+
+    let commands = EtherCliCommands::parse();
+
+    // println!("{:?}", api);
+    println!("{:?}", commands);
 }
