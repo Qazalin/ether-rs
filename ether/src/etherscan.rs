@@ -23,17 +23,21 @@ impl EtherscanApi {
         };
     }
 
-    pub async fn get_balance(&mut self, pub_key: String) -> Result<i64, EtherscanApiError> {
+    pub async fn get_balance(&mut self, pub_key: String) -> Result<String, EtherscanApiError> {
         self.url.query_pairs_mut().extend_pairs(&[
             ("module", "account"),
             ("action", "balance"),
             ("address", &pub_key),
             ("tag", "latest"),
         ]);
+
+        println!("{:?}", self.url.to_string());
         let resp = self.client.get(self.url.clone()).send().await?;
         self.url.query_pairs_mut().clear();
         println!("{:?}", resp);
-        Ok(0)
+
+        let body = resp.text().await?;
+        Ok(body)
     }
 }
 
