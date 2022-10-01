@@ -23,7 +23,7 @@ impl EtherscanApi {
         };
     }
 
-    pub async fn get_balance(&mut self, pub_key: String) -> Result<f64, EtherscanApiError> {
+    pub async fn get_balance(&mut self, pub_key: String) -> Result<f64, ApiError> {
         self.url.query_pairs_mut().extend_pairs(&[
             ("module", "account"),
             ("action", "balance"),
@@ -39,7 +39,31 @@ impl EtherscanApi {
             return Ok(balance);
         }
 
-        return Err(EtherscanApiError::EtherscanApiError(data.result));
+        return Err(ApiError::EtherscanApiError(data.result));
+    }
+
+    pub async fn get_block(&mut self) -> Result<String, ApiError> {
+        let timestamp_now = std::time::SystemTime::now();
+        let tv = timestamp_now
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_secs();
+        self.url.query_pairs_mut().extend_pairs(&[
+            ("module", "block"),
+            ("action", "getblocknobytime"),
+            ("timestamp", &tv.to_string()),
+            ("closest", "before"),
+        ]);
+
+        let res = self.client.get(self.url.clone()).send().await.unwrap();
+        self.url.query_pairs_mut().clear();
+        let data = res.json::<EthercanGeneralResponse<String>>().await.unwrap();
+
+        if data.status != "0" {
+            return Ok(data.result);
+        }
+
+        return Err(ApiError::EtherscanApiError(data.result));
     }
 }
 
@@ -50,7 +74,7 @@ pub struct EtherscanApiConfig {
 }
 
 #[derive(Debug, Error)]
-pub enum EtherscanApiError {
+pub enum ApiError {
     #[error("Request API error: {0}")]
     ReqwestError(#[from] reqwest::Error),
 

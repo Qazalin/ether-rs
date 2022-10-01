@@ -1,5 +1,5 @@
 mod opts;
-use crate::opts::{BalanceArgs, BlockArgs, Commands, Subcommands};
+use crate::opts::{BalanceArgs, BlockArgs, Subcommands};
 use clap::Parser;
 use ether::etherscan::{EtherscanApi, EtherscanApiConfig};
 
@@ -23,7 +23,8 @@ async fn main() {
             }
         }
         Subcommands::Block(BlockArgs {}) => {
-            println!("Getting block info");
+            let block_num = etherscan_api.get_block().await.unwrap();
+            println!("Block number: {}", block_num);
         }
     }
 }

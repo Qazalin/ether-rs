@@ -2,12 +2,12 @@ use thiserror::Error;
 
 pub mod etherscan;
 pub mod types;
+use etherscan::ApiError;
 pub use etherscan::EtherscanApi;
-use etherscan::EtherscanApiError;
 
 #[derive(Debug, Error)]
 
 pub enum ClientError {
     #[error(transparent)]
-    OpenSeaApiError(#[from] EtherscanApiError),
+    ApiError(#[from] ApiError),
 }
