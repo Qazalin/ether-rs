@@ -1,4 +1,4 @@
-use crate::types::User;
+use crate::types::{EthercanGeneralResponse, User};
 use reqwest::{Client, ClientBuilder, Url};
 use thiserror::Error;
 
@@ -23,7 +23,7 @@ impl EtherscanApi {
         };
     }
 
-    pub async fn get_balance(&mut self, pub_key: String) -> Result<String, EtherscanApiError> {
+    pub async fn get_balance(&mut self, pub_key: String) -> Result<f64, EtherscanApiError> {
         self.url.query_pairs_mut().extend_pairs(&[
             ("module", "account"),
             ("action", "balance"),
@@ -31,13 +31,15 @@ impl EtherscanApi {
             ("tag", "latest"),
         ]);
 
-        println!("{:?}", self.url.to_string());
-        let resp = self.client.get(self.url.clone()).send().await?;
+        let res = self.client.get(self.url.clone()).send().await?;
         self.url.query_pairs_mut().clear();
-        println!("{:?}", resp);
+        let data = res.json::<EthercanGeneralResponse<String>>().await?;
+        if data.status != "0" {
+            let balance = data.result.parse::<f64>().unwrap() / 1e18;
+            return Ok(balance);
+        }
 
-        let body = resp.text().await?;
-        Ok(body)
+        return Err(EtherscanApiError::EtherscanApiError(data.result));
     }
 }
 
@@ -49,6 +51,9 @@ pub struct EtherscanApiConfig {
 
 #[derive(Debug, Error)]
 pub enum EtherscanApiError {
-    #[error(transparent)]
+    #[error("Request API error: {0}")]
     ReqwestError(#[from] reqwest::Error),
+
+    #[error("Etherscan API error: {0}")]
+    EtherscanApiError(String),
 }
