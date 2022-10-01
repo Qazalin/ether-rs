@@ -9,3 +9,4 @@ edition = "2021"
 clap = { version = "4.0.2", features = ["derive"] }
 ether = { path = "../ether" }
 tokio = { version = "1.9.0", features = ["rt", "rt-multi-thread", "macros"] }
+loading = "*"

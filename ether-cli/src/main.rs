@@ -2,9 +2,11 @@ mod opts;
 use crate::opts::{BalanceArgs, BlockArgs, Subcommands};
 use clap::Parser;
 use ether::etherscan::{EtherscanApi, EtherscanApiConfig};
+use loading::Loading;
 
 #[tokio::main]
 async fn main() {
+    let loading = Loading::default();
     let mut etherscan_api = EtherscanApi::new(EtherscanApiConfig {
         api_key: None,
         user: None,
@@ -15,16 +17,17 @@ async fn main() {
     match commands.sub {
         Subcommands::Balance(BalanceArgs { address, me }) => {
             if me {
-                println!("Getting balance for authenticated user");
+                loading.text("Getting balance for authenticated user");
             } else {
-                println!("Getting balance for {}", address);
+                loading.text(format!("Getting balance for {}", address));
                 let balance = etherscan_api.get_balance(address).await.unwrap();
-                println!("Balance: {}", balance);
+                loading.success(format!("Balance: {} ETH ⬨", balance));
             }
         }
         Subcommands::Block(BlockArgs {}) => {
+            loading.text("Getting the latest block number");
             let block_num = etherscan_api.get_block().await.unwrap();
-            println!("Block number: {}", block_num);
+            loading.success(format!("Block number: {}", block_num));
         }
     }
 }

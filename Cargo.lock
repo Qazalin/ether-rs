@@ -134,6 +134,7 @@ version = "0.1.0"
 dependencies = [
  "clap",
  "ether",
+ "loading",
  "tokio",
 ]
 
@@ -387,6 +388,12 @@ name = "libc"
 version = "0.2.133"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c0f80d65747a3e43d1596c7c5492d95d5edddaabd45a7fcdb02b95f644164966"
+
+[[package]]
+name = "loading"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "676420b03272176423578148eee61319e893422694f6d96a394841cb0901357f"
 
 [[package]]
 name = "log"
